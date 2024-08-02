@@ -3,9 +3,9 @@ const express = require('express');
 
 const app = express();
 
-app.get('/', (req, res) => {
-    res.status(200).json({ message: 'Hello World' });
-});
+const router = require('./routes');
+// all routes start with /api 
+app.use('/api', router);
 // TODO: select a port
 const PORT = 5000;
 
