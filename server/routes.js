@@ -14,6 +14,13 @@ const getCollection = () => {
 router.get("/todos", async (req, res) => {
     const collection = getCollection();
     const todos = await collection.find({}).toArray();
+    if (todos.length !== 7) {
+        for (let i = 0; i < 7; i++) {
+            if (!todos[i]) {
+                await collection.insertOne({ todo: "", status: false });
+            }
+        }
+    }
     res.status(200).json(todos);
 });
 
@@ -35,24 +42,30 @@ router.post('/todos', async (req, res) => {
     res.status(201).json({ todo, status: false, _id: newTodo.insertedId });
 });
 
-// PUT
-router.put('/todos/:id', async (req, res) => {
+// PUT change status
+router.put('/todos/:id/status', async (req, res) => {
     const collection = getCollection();
     const _id = new ObjectId(req.params.id);
-    const { status, todo } = req.body;
+    const { status } = req.body;
 
     if (typeof status !== 'boolean') {
         return res.status(400).json({ error: "Invalid Status, Not Boolean" });
-    } else if (!todo || typeof todo !== 'string') {
+    }
+    const updatedTodo = await collection.updateOne({ _id }, { $set: { status: !status } });
+    res.status(200).json(updatedTodo);
+});
+
+// PUT change todo
+router.put('/todos/:id/todo', async (req, res) => {
+    const collection = getCollection();
+    const _id = new ObjectId(req.params.id);
+    const { todo } = req.body;
+
+    if (!todo || typeof todo !== 'string') {
         return res.status(400).json({ error: "ToDo Not valid" });
     }
-    const updatedTodo = await collection.updateOne({ _id }, { $set: { status: !status, todo } });
+    const updatedTodo = await collection.updateOne({ _id }, { $set: { todo } });
     res.status(200).json(updatedTodo);
-
-
-
-
-
 });
 
 // DELETE

@@ -51,8 +51,14 @@ body {
   font-family: "Share Tech Mono", monospace;
 }
 
+#root {
+  display: flex;
+  align-items: center;
+  height: 100vh;
+}
 /* container */
 .container {
+  flex: 1;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -60,6 +66,26 @@ body {
 /* todos list */
 .title {
   text-align: center;
+}
+hr {
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  width: 75%;
+}
+.date {
+  text-align: center;
+  padding: 0.5rem 1rem;
+  color: #ccc;
+}
+
+.todo_input {
+  border: none;
+  background: transparent;
+  cursor: text;
+  width: 100%;
+  &:focus {
+    outline: none;
+  }
 }
 
 .todos {
@@ -79,11 +105,6 @@ body {
   border-radius: 5px;
 }
 
-.mutations {
-  display: flex;
-  gap: 0.5rem;
-}
-
 .todo_status,
 .todo_delete {
   border: none;
@@ -91,7 +112,10 @@ body {
   line-height: 1;
   cursor: pointer;
   transition: all 0.15s;
-
+  color: #ccc;
+  font-size: 1.25rem;
+  margin-right: 1rem;
+  background: transparent;
   &:hover {
     transform: scale(1.15);
   }
