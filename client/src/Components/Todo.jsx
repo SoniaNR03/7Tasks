@@ -80,7 +80,7 @@ export default function Todo(props) {
         🗑️
       </button> */}
       {/* </div> */}
-      <h3>{todo.index + "."}</h3>
+      <h3>{todo.index + 1 + "."}</h3>
       <input
         className="todo_input"
         type="text"

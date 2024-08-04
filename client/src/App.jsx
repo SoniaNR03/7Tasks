@@ -72,13 +72,15 @@ export default function App() {
     <main className="container">
       <h1 className="title">7 Taks</h1>
       <hr />
-      <DatePicker
-        selected={getDateFromString(curDate)}
-        dateFormat={"dd.MM.YYYY"}
-        onChange={(date) => setDate(getDateToString(date))}
-      />
+      <div className="container_date">
+        <DatePicker
+          selected={getDateFromString(curDate)}
+          dateFormat={"dd.MM.YYYY"}
+          onChange={(date) => setDate(getDateToString(date))}
+          customInput={<button className="button_date">{curDate} 📅</button>}
+        />
+      </div>
 
-      {/* <h3 className="date">{getDateToString(new Date())}</h3> */}
       <div className="todos">
         {todos.length > 0 &&
           todos.map((todo) => (
@@ -89,17 +91,6 @@ export default function App() {
               id={curDate}
             />
           ))}
-        <form className="form" onSubmit={createNewTodo}>
-          <input
-            type="text"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Add a new task"
-            required
-            className="form_input"
-          />
-          <button type="submit">Add</button>
-        </form>
       </div>
     </main>
   );
