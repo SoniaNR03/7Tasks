@@ -1,8 +1,8 @@
 export default function Todo(props) {
-  const { todo, setTodos, index } = props;
+  const { todo, setTodos, id } = props;
 
-  const updateTodo = async (id, todoText) => {
-    const res = await fetch(`/api/todos/${id}/todo`, {
+  const updateTodo = async (id, index, todoText) => {
+    const res = await fetch(`/api/todos/${id}/todo/${index}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -14,7 +14,7 @@ export default function Todo(props) {
     if (json.acknowledged) {
       setTodos((currentTodos) => {
         return currentTodos.map((todo) => {
-          if (todo._id === id) {
+          if (todo.index === index) {
             return { ...todo, todo: todoText };
           }
           return todo;
@@ -23,8 +23,8 @@ export default function Todo(props) {
     }
   };
 
-  const updateStatus = async (id, todoStatus) => {
-    const res = await fetch(`/api/todos/${id}/status`, {
+  const updateStatus = async (id, index, todoStatus) => {
+    const res = await fetch(`/api/todos/${id}/status/${index}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -36,7 +36,7 @@ export default function Todo(props) {
     if (json.acknowledged) {
       setTodos((currentTodos) => {
         return currentTodos.map((todo) => {
-          if (todo._id === id) {
+          if (todo.index === index) {
             return { ...todo, status: !todo.status };
           }
           return todo;
@@ -71,23 +71,23 @@ export default function Todo(props) {
       {/* <div className="mutations"> */}
       <button
         className="todo_status"
-        onClick={() => updateStatus(todo._id, todo.status)}
+        onClick={() => updateStatus(id, todo.index, todo.status)}
       >
         {!todo.status ? "☐" : "☒"}
       </button>
 
-      <button className="todo_delete" onClick={() => deleteTodo(todo._id)}>
+      {/* <button className="todo_delete" onClick={() => deleteTodo(todo._id)}>
         🗑️
-      </button>
+      </button> */}
       {/* </div> */}
-      <h3>{index + "."}</h3>
+      <h3>{todo.index + "."}</h3>
       <input
         className="todo_input"
         type="text"
         value={todo.todo || ""}
         // placeholder="..."
         onKeyDown={(event) => handleKeyDown(event)}
-        onChange={(event) => updateTodo(todo._id, event.target.value)}
+        onChange={(event) => updateTodo(id, todo.index, event.target.value)}
       />
     </div>
   );

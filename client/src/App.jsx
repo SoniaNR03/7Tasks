@@ -3,15 +3,17 @@ import Todo from "./Components/Todo";
 
 export default function App() {
   const [todos, setTodos] = useState([]);
+  const [curDate, setDate] = useState("");
   const [content, setContent] = useState("");
 
   useEffect(() => {
-    async function getTodos() {
-      const res = await fetch("/api/todos");
-      const todos = await res.json();
-      setTodos(todos);
+    async function getTodos(date) {
+      const res = await fetch("/api/todos/" + date);
+      const obj = await res.json();
+      setDate(obj._id);
+      setTodos(obj.todos);
     }
-    getTodos();
+    getTodos(getDateToString(new Date()));
   }, []); // empty array means run once
 
   const createNewTodo = async (e) => {
@@ -31,8 +33,7 @@ export default function App() {
     }
   };
 
-  const getCurrentDate = () => {
-    const date = new Date();
+  const getDateToString = (date) => {
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0"); // Los meses empiezan desde 0
     const year = date.getFullYear();
@@ -43,15 +44,15 @@ export default function App() {
     <main className="container">
       <h1 className="title">7 Taks</h1>
       <hr />
-      <h3 className="date">{getCurrentDate()}</h3>
+      <h3 className="date">{getDateToString(new Date())}</h3>
       <div className="todos">
         {todos.length > 0 &&
-          todos.map((todo, index) => (
+          todos.map((todo) => (
             <Todo
-              key={todo._id}
+              key={todo.index}
               todo={todo}
               setTodos={setTodos}
-              index={index + 1}
+              id={curDate}
             />
           ))}
         <form className="form" onSubmit={createNewTodo}>
