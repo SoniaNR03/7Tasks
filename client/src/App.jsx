@@ -1,20 +1,55 @@
 import { useEffect, useState } from "react";
 import Todo from "./Components/Todo";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function App() {
+  const getDateToString = (date) => {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Los meses empiezan desde 0
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
+  };
+
+  const getDateFromString = (date) => {
+    const [day, month, year] = date.split(".");
+    return new Date(year, month - 1, day);
+  };
+
   const [todos, setTodos] = useState([]);
-  const [curDate, setDate] = useState("");
+  const [curDate, setDate] = useState(getDateToString(new Date()));
   const [content, setContent] = useState("");
+
+  const createDateTodos = async (date) => {
+    const res = await fetch("/api/todos", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ date }),
+    });
+    const obj = await res.json();
+    if (obj.acknowledged) {
+      const res2 = await fetch(`/api/todos/${date}`);
+      const obj2 = await res2.json();
+      setDate(obj2._id);
+      setTodos(obj2.todos);
+    }
+  };
 
   useEffect(() => {
     async function getTodos(date) {
-      const res = await fetch("/api/todos/" + date);
-      const obj = await res.json();
-      setDate(obj._id);
-      setTodos(obj.todos);
+      const res = await fetch(`/api/todos/${date}`);
+      if (res.status !== 200) {
+        createDateTodos(date);
+      } else {
+        const obj = await res.json();
+        setDate(obj._id);
+        setTodos(obj.todos);
+      }
     }
-    getTodos(getDateToString(new Date()));
-  }, []); // empty array means run once
+    getTodos(curDate);
+  }, [curDate]); // empty array means run once
 
   const createNewTodo = async (e) => {
     e.preventDefault();
@@ -33,18 +68,17 @@ export default function App() {
     }
   };
 
-  const getDateToString = (date) => {
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Los meses empiezan desde 0
-    const year = date.getFullYear();
-    return `${day}.${month}.${year}`;
-  };
-
   return (
     <main className="container">
       <h1 className="title">7 Taks</h1>
       <hr />
-      <h3 className="date">{getDateToString(new Date())}</h3>
+      <DatePicker
+        selected={getDateFromString(curDate)}
+        dateFormat={"dd.MM.YYYY"}
+        onChange={(date) => setDate(getDateToString(date))}
+      />
+
+      {/* <h3 className="date">{getDateToString(new Date())}</h3> */}
       <div className="todos">
         {todos.length > 0 &&
           todos.map((todo) => (
