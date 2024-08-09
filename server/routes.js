@@ -9,15 +9,6 @@ const getCollection = () => {
     return client.db("todosdb").collection("todos");
 }
 
-const fill_days = async (collection, todos) => {
-    if (todos.length !== 7) {
-        for (let i = 0; i < 7; i++) {
-            if (!todos[i]) {
-                await collection.insertOne({ todo: "", status: false });
-            }
-        }
-    }
-}
 
 // GET
 router.get("/todos/:date", async (req, res) => {
@@ -36,21 +27,23 @@ router.post('/todos', async (req, res) => {
     const collection = getCollection();
     let { date } = req.body; // extract the todo from the request body(the property todo of the json format)
 
-    date = date ? new Date(date) : null;
-    if (!date) {
-        return res.status(400).json({ error: "Date is required" });
+    const strToDate = (date) => {
+        if (!date) {
+            return res.status(400).json({ error: "Date is required" });
+        }
+
+        const [day, month, year] = date.split(".");
+        return new Date(year, month - 1, day);
     }
-    else if (date < new Date()) {
+
+    dateFormat = strToDate(date);
+
+    if (dateFormat < new Date()) {
+
         return res.status(400).json({ error: "Late date" });
     }
-    const transformDate = (date) => {
-        const day = String(date.getDate()).padStart(2, "0");
-        const month = String(date.getMonth() + 1).padStart(2, "0"); // Los meses empiezan desde 0
-        const year = date.getFullYear();
-        return `${day}.${month}.${year}`;
-    };
-    const newDay = await collection.insertOne({ _id: transformDate(date), todos: new Array(7).fill(null).map((_, index) => ({ index: index, todo: "", status: false, })) });
-    res.status(201).json(newDay);
+    const newDay = await collection.insertOne({ _id: date, todos: new Array(7).fill(null).map((_, index) => ({ index: index, todo: "", status: false, })) });
+    return res.status(201).json(newDay);
 });
 
 // PUT change status

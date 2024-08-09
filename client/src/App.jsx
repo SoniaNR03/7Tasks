@@ -51,22 +51,22 @@ export default function App() {
     getTodos(curDate);
   }, [curDate]); // empty array means run once
 
-  const createNewTodo = async (e) => {
-    e.preventDefault();
+  // const createNewTodo = async (e) => {
+  //   e.preventDefault();
 
-    if (content.length > 3) {
-      const res = await fetch("/api/todos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ todo: content }),
-      });
-      const newTodo = await res.json();
-      setContent("");
-      setTodos([...todos, newTodo]);
-    }
-  };
+  //   if (content.length > 3) {
+  //     const res = await fetch("/api/todos", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ todo: content }),
+  //     });
+  //     const newTodo = await res.json();
+  //     setContent("");
+  //     setTodos([...todos, newTodo]);
+  //   }
+  // };
 
   return (
     <main className="container">
